@@ -1,0 +1,66 @@
+close all;
+clear all;
+load testdata1;
+
+%% Creates a figure handle for the plotting
+figurehandle = figure(1);
+
+%% Plot the stuff on the left
+subplot(2,2,1); plot(VarName4)
+subplot(2,2,3); plot(VarName18)
+
+%% Request a start point from the user
+defaultstart = {num2str(find(VarName4 > 1000, 1 ))};
+answer = inputdlg('Enter start point','Start point',1,defaultstart);
+STARTPOINT = str2double(answer{1});
+
+%% Update left hand plot axes 
+subplot(2,2,1); axis([STARTPOINT length(VarName4) 0 max(VarName4)*1.2]); grid minor;
+
+subplot(2,2,1); rpmline = line([STARTPOINT,STARTPOINT],[0,max(VarName4)*1.2],'Color','k');
+subplot(2,2,3); 
+hold on;
+afrstoichline = line([0,length(VarName18)],[14.7,14.7],'Color','r');
+afrline = line([STARTPOINT,STARTPOINT],[10,20],'Color','k');
+hold off;
+axis([STARTPOINT length(VarName18) 10 20]); grid minor;
+
+%% Set up the plotting to update the fuel map plot
+LINELENGTH = 10;
+subplot(1,2,2);
+xd = VarName4(STARTPOINT:STARTPOINT+LINELENGTH);
+yd = VarName16(STARTPOINT:STARTPOINT+LINELENGTH);
+maplinehandle = plot(xd,yd); axis([0 13000 0 100]); grid minor
+mapax = gca;
+set(maplinehandle,'xdata',xd,'ydata',yd)
+    
+%% The main plotting loop
+i = STARTPOINT+LINELENGTH;
+while i < (length(VarName4)-LINELENGTH)
+    i = i +1;
+    
+    % Update the fuel mapping plot
+    xd = VarName4(i:i+LINELENGTH);
+    yd = VarName16(i:i+LINELENGTH);
+    set(maplinehandle,'xdata',xd,'ydata',yd)
+    
+    % This draws the lines on the plots on the left
+    set(rpmline,'xdata',[i,i])
+    set(afrline,'xdata',[i,i])
+    
+    drawnow
+    pause(0.02)
+
+     % This lets you pause the program and set a new point
+     isKeyPressed = ~isempty(get(figurehandle,'CurrentCharacter'));
+     if isKeyPressed
+         while 1
+            [newx,~] = ginput(1);
+            if gca ~= mapax
+                i = newx;
+                
+            end
+        end
+     end
+
+end
