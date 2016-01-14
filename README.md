@@ -2,4 +2,6 @@
 
 Contains the Matlab code for the interactive analysis of the race car data collected with the PycroSquirt library
 
-To get started run fuelVis.m
+Two datasets of testing a custom built race car with engine trouble are included
+
+To get started run fuelvis.m
